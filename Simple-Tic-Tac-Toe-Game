@@ -1,0 +1,172 @@
+package tictactoe;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+    final static Scanner scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+
+        // write your code here
+        char[][] arr = new char[3][3];
+        game(arr);
+    }
+    static void game(char[][] a) {
+        boolean finish = false;
+        fillArray(a);
+        print(a);
+        while (!finish) {
+            userStep(a);
+            print(a);
+            finish = totalCheck(a);
+        }
+    }
+    static void print(char[][] a) {
+        System.out.println("---------");
+        System.out.printf("| %s %s %s |%n", a[0][0], a[0][1], a[0][2]);
+        System.out.printf("| %s %s %s |%n", a[1][0], a[1][1], a[1][2]);
+        System.out.printf("| %s %s %s |%n", a[2][0], a[2][1], a[2][2]);
+        System.out.println("---------");
+    }
+    static void userStep(char[][] a) {
+        System.out.println("Enter the coordinates:");
+        String userInputX = scanner.next(); //scan the input
+        String userInputO = scanner.next();
+        int x;
+        int o;
+        try {
+            x = Integer.parseInt(userInputX); // try to parse the "number" to int
+            o = Integer.parseInt(userInputO); // try to parse the "number" to int
+            stepU(a,x,o);
+        } catch (NumberFormatException e) {
+            System.out.println("You should enter numbers!");
+        }
+    }
+    static void stepU(char[][] a, int x, int y) {
+            int countX = 0;
+            int countO = 0;
+            for (char[] chars : a) {
+                for (char aChar : chars) {
+                    if (aChar == 'X') {
+                        ++countX;
+                    } else if (aChar == 'O') {
+                        ++countO;
+                    }
+                }
+            }
+            if (countX == countO) {
+                fillUserStepX(a,x,y);
+            } else if (countX > countO) {
+                fillUserStepO(a,x,y);
+            }
+    }
+    static void fillUserStepX(char[][] a, int x, int y){
+        try {
+                if (a[x-1][y-1] == '_') {
+                    a[x-1][y-1] = 'X';
+                } else {
+                    System.out.println("This cell is occupied! Choose another one!");
+                    userStep(a);
+                }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Coordinates should be from 1 to 3!");
+            userStep(a);
+        }
+    }
+    static void fillUserStepO(char[][] a, int x, int y){
+        try {
+            if (a[x-1][y-1] == '_') {
+                a[x-1][y-1] = 'O';
+            } else {
+                System.out.println("This cell is occupied! Choose another one!");
+                userStep(a);
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Coordinates should be from 1 to 3!");
+            userStep(a);
+        }
+    }
+
+    static void fillArray(char[][] arr) {
+        for (char[] chars : arr) {
+            Arrays.fill(chars, '_');
+            }
+        }
+    static boolean totalCheck (char[][] a) {
+        boolean finish = false;
+        if(checkSteps(a)) {
+            if (winCheckX(a) == winCheckY(a)) {
+                if (!winCheckY(a)) {
+                    if (!checkEmpty(a)) {
+                        System.out.println("Draw");
+                        finish = true;
+                    }
+                } else {
+                    System.out.println("Impossible");
+                    finish = true;
+                }
+            } else if (winCheckX(a)) {
+                System.out.println("X wins");
+                finish = true;
+            } else if (winCheckY(a)) {
+                System.out.println("O wins");
+                finish = true;
+            }
+        } else {
+            System.out.println("Impossible");
+            finish = true;
+        }
+        return finish;
+    }
+    //@ Check if there is an empty places
+    static boolean checkEmpty(char[][] a) {
+        int count = 0;
+        for (char[] chars : a) {
+            for (char aChar : chars) {
+                if (aChar == '_') {
+                    ++count;
+                }
+            }
+        }
+        return count > 0;
+    }
+    //@ Check if there is a correct amount of X and O
+    static boolean checkSteps (char[][] a) {
+        int countX = 0;
+        int countO = 0;
+        for (char[] chars : a) {
+            for (char aChar : chars) {
+                if (aChar == 'X') {
+                    ++countX;
+                } else if (aChar == 'O') {
+                    ++countO;
+                }
+            }
+        }
+        int res = countX - countO;
+        return res <= 1 && res >= -1;
+    }
+    //@ Check if there is a winner in X or O
+    static boolean winCheckX (char[][] a) {
+        boolean hor1 = a[0][0] == 'X' && a[0][1] == 'X' && a[0][2] == 'X';
+        boolean hor2 = a[1][0] == 'X' && a[1][1] == 'X' && a[1][2] == 'X';
+        boolean hor3 = a[2][0] == 'X' && a[2][1] == 'X' && a[2][2] == 'X';
+        boolean ver1 = a[0][0] == 'X' && a[1][0] == 'X' && a[2][0] == 'X';
+        boolean ver2 = a[0][1] == 'X' && a[1][1] == 'X' && a[2][1] == 'X';
+        boolean ver3 = a[0][2] == 'X' && a[1][2] == 'X' && a[2][2] == 'X';
+        boolean dg1 = a[0][0] == 'X' && a[1][1] == 'X' && a[2][2] == 'X';
+        boolean dg2 = a[0][2] == 'X' && a[1][1] == 'X' && a[2][0] == 'X';
+        return hor1 || hor2 || hor3 || ver1 || ver2 || ver3 || dg1 || dg2;
+    }
+    static boolean winCheckY (char[][] a) {
+        boolean hor1 = a[0][0] == 'O' && a[0][1] == 'O' && a[0][2] == 'O';
+        boolean hor2 = a[1][0] == 'O' && a[1][1] == 'O' && a[1][2] == 'O';
+        boolean hor3 = a[2][0] == 'O' && a[2][1] == 'O' && a[2][2] == 'O';
+        boolean ver1 = a[0][0] == 'O' && a[1][0] == 'O' && a[2][0] == 'O';
+        boolean ver2 = a[0][1] == 'O' && a[1][1] == 'O' && a[2][1] == 'O';
+        boolean ver3 = a[0][2] == 'O' && a[1][2] == 'O' && a[2][2] == 'O';
+        boolean dg1 = a[0][0] == 'O' && a[1][1] == 'O' && a[2][2] == 'O';
+        boolean dg2 = a[0][2] == 'O' && a[1][1] == 'O' && a[2][0] == 'O';
+        return hor1 || hor2 || hor3 || ver1 || ver2 || ver3 || dg1 || dg2;
+    }
+}
